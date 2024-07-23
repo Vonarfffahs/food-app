@@ -147,8 +147,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Using classes for menu cards
     class MenuCard {
-        constructor(imgSrc, alt, title, descr, price, parentSelector, ...classes) {
-            this.imgSrc = imgSrc;
+        constructor(slidesrc, alt, title, descr, price, parentSelector, ...classes) {
+            this.slidesrc = slidesrc;
             this.alt = alt;
             this.title = title;
             this.descr = descr;
@@ -174,7 +174,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
 
             element.innerHTML = `
-                <img src=${this.imgSrc} alt=${this.alt}>
+                <img src=${this.slidesrc} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
                 <div class="menu__item-descr">${this.descr}</div>
                 <div class="menu__item-divider"></div>
@@ -261,4 +261,43 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000);
     }
+
+    // Slider
+    const slides = document.querySelectorAll('.offer__slide'),
+          prevBtn = document.querySelector('.offer__slider-prev'),
+          nextBtn = document.querySelector('.offer__slider-next'),
+          total = document.querySelector('#total'),
+          current = document.querySelector('#current');
+    let slideIndex = 1;
+
+    showSlides(slideIndex);
+
+    total.textContent = slides.length < 10 ? `0${slides.length}` : slides.length;
+
+    function showSlides(n) {
+        if (n > slides.length) {
+            slideIndex = 1;
+        }
+
+        if (n < 1) {
+            slideIndex = slides.length;
+        }
+
+        slides.forEach(img => img.style.display = 'none');
+
+        slides[slideIndex-1].style.display = 'block';
+
+        current.textContent = slideIndex < 10 ? `0${slideIndex}` : slideIndex;
+    }
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    prevBtn.addEventListener('click', () => {
+        plusSlides(-1);
+    });
+    nextBtn.addEventListener('click', () => {
+        plusSlides(1);
+    });
 });
