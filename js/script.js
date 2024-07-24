@@ -264,40 +264,116 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Slider
     const slides = document.querySelectorAll('.offer__slide'),
+          slider = document.querySelector('.offer__slider'),
           prevBtn = document.querySelector('.offer__slider-prev'),
           nextBtn = document.querySelector('.offer__slider-next'),
           total = document.querySelector('#total'),
-          current = document.querySelector('#current');
-    let slideIndex = 1;
+          current = document.querySelector('#current'),
+          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+          slidesField = document.querySelector('.offer__slider-inner'),
+          width = window.getComputedStyle(slidesWrapper).width;
 
-    showSlides(slideIndex);
+    let slideIndex = 1,
+        offset = 0;
+    
+    if (slides.length < 10) {
+        total.textContent = `0${slides.length}`;
+        current.textContent = `0${slideIndex}`;
+    } else {
+        total.textContent = slides.length;
+        current.textContent = slideIndex;
+    }
 
-    total.textContent = slides.length < 10 ? `0${slides.length}` : slides.length;
+    slidesField.style.width = 100 * slides.length + '%';
+    slidesField.style.display = 'flex';
+    slidesField.style.transition = '0.5s all';
 
-    function showSlides(n) {
-        if (n > slides.length) {
+    slidesWrapper.style.overflow = 'hidden';
+
+    slides.forEach(slide => {
+        slide.style.width = width;
+    });
+
+    slider.style.position = 'relative';
+
+    const indicators = document.createElement('ol'),
+          dots = [];
+
+    indicators.classList.add('carousel-indicators');
+    slider.append(indicators);
+
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('li');
+        dot.setAttribute('data-slide-to', i + 1);
+        dot.classList.add('dot');
+        if (i == 0) {
+            dot.style.opacity = 1;
+        }
+        indicators.append(dot);
+        dots.push(dot);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+            offset = 0;
+        } else {
+            offset += +width.slice(0, width.length - 2);
+        }
+
+        slidesField.style.transform = `translateX(-${offset}px)`;
+
+        if (slideIndex == slides.length) {
             slideIndex = 1;
+        } else {
+            slideIndex++;
         }
 
-        if (n < 1) {
-            slideIndex = slides.length;
-        }
+        changeCurrentIndex(slideIndex);
 
-        slides.forEach(img => img.style.display = 'none');
-
-        slides[slideIndex-1].style.display = 'block';
-
-        current.textContent = slideIndex < 10 ? `0${slideIndex}` : slideIndex;
-    }
-
-    function plusSlides(n) {
-        showSlides(slideIndex += n);
-    }
+        changeDotsOpacity(slideIndex);
+    });
 
     prevBtn.addEventListener('click', () => {
-        plusSlides(-1);
+        if (offset == 0) {
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+        } else {
+            offset -= +width.slice(0, width.length - 2);
+        }
+
+        slidesField.style.transform = `translateX(-${offset}px)`;
+
+        if (slideIndex == 1) {
+            slideIndex = slides.length;
+        } else {
+            slideIndex--;
+        }
+
+        changeCurrentIndex(slideIndex);
+
+        changeDotsOpacity(slideIndex);
     });
-    nextBtn.addEventListener('click', () => {
-        plusSlides(1);
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            const slideTo = e.target.getAttribute('data-slide-to');
+
+            slideIndex = slideTo;
+            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+
+            slidesField.style.transform = `translateX(-${offset}px)`;
+
+            changeCurrentIndex(slideIndex);
+
+            changeDotsOpacity(slideIndex);
+        });
     });
+
+    function changeCurrentIndex(slideIndex) {
+        current.textContent = (slides.length < 10) ? `0${slideIndex}` : slideIndex;
+    }
+
+    function changeDotsOpacity(slideIndex) {
+        dots.forEach(dot => dot.style.opacity = '.5');
+        dots[slideIndex - 1].style.opacity = 1;
+    }
 });
