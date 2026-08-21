@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/Vonarfffahs/ubiquitous-waffle#readme",
   "devDependencies": {
-    "json-server": "^1.0.0-beta.1"
-  }
+    "json-server": "^1.0.0-beta.1",
+    "webpack": "^5.109.2",
+    "webpack-cli": "^7.2.2"
+  },
+  "keywords": [],
+  "type": "commonjs"
 }
